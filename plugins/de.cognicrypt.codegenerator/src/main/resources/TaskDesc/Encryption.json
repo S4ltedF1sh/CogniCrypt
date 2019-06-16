@@ -47,6 +47,7 @@
             "option": "hybrid",
             "value": "true"
           }]
+          "nextID": "2"
         },
         {
           "value": "Unencrypted analog channel (e.g. phone, mail)",
@@ -83,6 +84,7 @@
             }]
         }]
      },
+     
      {
       "id": "1",
       "element": "checkbox",
@@ -128,7 +130,52 @@
           "defaultAnswer": true
         }
       ]
-    }
+    },
+    
+    {
+      "id": "2",
+      "element": "yes/no",
+      "note": "",
+      "questionText": "Do you need your encryption to be post-quantum-secure?",
+      "answers":[{
+      	 "value": "yes",
+      	 "codeDependencies": [{
+            "option": "post-quantum",
+            "value": "true"
+          }],
+      	 "claferDependencies": [{
+              "algorithm": "lbc",
+              "value": "LatticeBasedCipher",
+              "operator": "->"
+            },
+            {
+              "algorithm": "security",
+              "value": "min(asymmetricCipher.algorithmSecurity, lbc.algorithmSecurity)",
+              "operator": "="
+            }]
+         "defaultAnswer": true
+      	},
+      	{
+      	 "value": "no",
+      	 "codeDependencies": [{
+            "option": "post-quantum",
+            "value": "false"
+          }],
+      	 "claferDependencies": [{
+              "algorithm": "lbc",
+              "value": "LatticeBasedCipher",
+              "operator": "->"
+            },
+            {
+              "algorithm": "security",
+              "value": "min(asymmetricCipher.algorithmSecurity, lbc.algorithmSecurity)",
+              "operator": "="
+            }]
+      	}
+      	
+      ]
+      
+     }
   ],
   "nextID": "-1"
 }]
