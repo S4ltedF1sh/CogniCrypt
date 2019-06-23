@@ -46,7 +46,7 @@
           "codeDependencies": [{
             "option": "hybrid",
             "value": "true"
-          }]
+          }],
           "nextID": "2"
         },
         {
@@ -134,7 +134,7 @@
     
     {
       "id": "2",
-      "element": "yes/no",
+      "element": "radio",
       "note": "",
       "questionText": "Do you need your encryption to be post-quantum-secure?",
       "answers":[{
@@ -152,7 +152,7 @@
               "algorithm": "security",
               "value": "min(asymmetricCipher.algorithmSecurity, lbc.algorithmSecurity)",
               "operator": "="
-            }]
+            }],
          "defaultAnswer": true
       	},
       	{
