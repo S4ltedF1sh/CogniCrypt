@@ -47,7 +47,7 @@
             "option": "hybrid",
             "value": "true"
           }],
-          "nextID": "2"
+          "nextID": "1"
         },
         {
           "value": "Unencrypted analog channel (e.g. phone, mail)",
@@ -84,7 +84,6 @@
             }]
         }]
      },
-     
      {
       "id": "1",
       "element": "checkbox",
@@ -130,52 +129,52 @@
           "defaultAnswer": true
         }
       ]
-    },
-    
-    {
-      "id": "2",
-      "element": "radio",
-      "note": "",
-      "questionText": "Do you need your encryption to be post-quantum-secure?",
-      "answers":[{
-      	 "value": "yes",
-      	 "codeDependencies": [{
+    }
+  ],
+  "nextID": "-1"
+},
+{
+  "id": "1",
+  "helpID": "Encryption_Page1",
+  "content":[{
+	  "id": "2",
+	  "element":"radio",
+	  "questionText": "Do you need your encryption to be post-quantum-secure?",
+	  "answers": [{
+	  	"value": "yes",
+	  	"codeDependencies": [{
             "option": "post-quantum",
             "value": "true"
-          }],
-      	 "claferDependencies": [{
-              "algorithm": "lbc",
-              "value": "LatticeBasedCipher",
-              "operator": "->"
-            },
-            {
-              "algorithm": "security",
-              "value": "min(asymmetricCipher.algorithmSecurity, lbc.algorithmSecurity)",
-              "operator": "="
-            }],
-         "defaultAnswer": true
-      	},
-      	{
-      	 "value": "no",
-      	 "codeDependencies": [{
+        }],
+        "claferDependencies":[{
+			"algorithm": "lbc",
+            "value": "LatticeBasedCipher",
+            "operator": "->"
+        },
+        {
+        	"algorithm": "security",
+            "value": "min(asymmetricCipher.algorithmSecurity, lbc.algorithmSecurity)",
+            "operator": "="
+        }],
+        "defaultAnswer": "true"
+	  },
+	  {
+	  	"value": "no",
+      	"codeDependencies": [{
             "option": "post-quantum",
             "value": "false"
-          }],
-      	 "claferDependencies": [{
-              "algorithm": "lbc",
-              "value": "LatticeBasedCipher",
-              "operator": "->"
-            },
-            {
-              "algorithm": "security",
-              "value": "min(asymmetricCipher.algorithmSecurity, lbc.algorithmSecurity)",
-              "operator": "="
-            }]
-      	}
-      	
-      ]
-      
-     }
-  ],
+        }],
+        "claferDependencies": [{
+            "algorithm": "lbc",
+            "value": "LatticeBasedCipher",
+            "operator": "->"
+        },
+        {
+            "algorithm": "security",
+            "value": "min(asymmetricCipher.algorithmSecurity, lbc.algorithmSecurity)",
+            "operator": "="
+        }]
+	  }]
+  }],
   "nextID": "-1"
 }]
