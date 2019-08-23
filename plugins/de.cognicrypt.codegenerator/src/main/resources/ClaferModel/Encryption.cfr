@@ -2,6 +2,7 @@ abstract Enum
 
 //enum Security
 abstract Security : Enum -> integer
+NoSecurity: Security = 0 // added from LP
 Broken: Security = 1
 Weak: Security = 2
 Medium: Security = 3
@@ -32,7 +33,7 @@ CTR : Mode
 CTS : Mode
 CFB : Mode
 OFB : Mode
-//GCM : Mode
+GCM : Mode // added from LP
 
 //enum Provider
 abstract Provider: Enum
@@ -129,3 +130,92 @@ Encryption : Task
 	symmetricCipher -> SymmetricBlockCipher
 	asymmetricCipher -> AsymmetricCipher
 	security -> integer
+	
+
+//added from LindnerPeikert//////////////////////////////////////////////
+abstract XQuantum : Enum
+pre  : XQuantum 
+post : XQuantum
+
+abstract AttackModel : Enum
+ CPA : AttackModel
+ CCA1 : AttackModel 
+ CCA2 : AttackModel
+ SC : AttackModel
+ 
+ abstract Algorithm2
+    name -> string
+    description -> string
+    security -> Security
+    performance -> Performance
+
+abstract Cipher2 : Algorithm2
+	secProperty -> AttackModel
+	quantum -> XQuantum
+ 
+ abstract AsymmetricCipher : Cipher2
+	keySizePub -> integer
+	keySizeSec -> integer
+	performanceEnc -> Performance
+	performanceDec -> Performance
+ 
+ abstract LatticeBasedCipher: AsymmetricCipher
+	messageSize -> integer
+	cipherSize -> integer
+	n -> integer
+	q -> integer 
+ 
+ LP: LatticeBasedCipher
+    [ name = "LP" ]
+    [ description = "Linder-Peikert Scheme"]
+    [ messageSize = 1 || messageSize = 2 || messageSize = 3 ]
+    [ n = 1 || n = 2 || n = 3 || n = 4 ]
+    [ q =  20 || q = 40 ] // Technically, this line is not necessary.
+    s -> integer
+    [ s = 6 || s = 9 || s = 7 || s = 8 ] // Technically, this line is not necessary.
+    [ quantum = post ]
+    [ n = 1 => q = 20 && s = 6 && security = Broken && cipherSize = 22 * messageSize ]
+    [ n = 2 => q = 40 && s = 9 && security = Weak   && cipherSize = 30 * messageSize ]
+    [ n = 3 => q = 40 && s = 7 && security = Medium && cipherSize = 36 * messageSize ]
+    [ n = 4 => q = 40 && s = 8 && security = Strong && cipherSize = 42 * messageSize ]
+    [ keySizePub = n * n * 25]
+    [ keySizeSec = n * 26 ]
+    [ performanceEnc = Slow ]
+[ performanceDec = Fast ]
+
+// I'm not sure if this is needed
+AES128 : SymmetricBlockCipher
+	[name = "AES"]
+	[description = "Advanced Encryption Standard (AES) cipher"]s
+	[keySize = 128]
+	[performance = VeryFast]
+	[security = Medium]
+
+AES192 : SymmetricBlockCipher
+	[name = "AES"]
+	[description = "Advanced Encryption Standard (AES) cipher"]s
+	[keySize = 192]
+	[performance = Fast]
+	[security = Strong]
+	
+
+AES256 : SymmetricBlockCipher
+	[name = "AES"]
+	[description = "Advanced Encryption Standard (AES) cipher"]s
+	[keySize = 256]
+	[performance = Fast]
+	[security = Strong]
+	
+abstract AsymmetricCipher : Cipher
+	keySizePub -> integer
+	keySizeSec -> integer
+	performanceEnc -> Performance
+	performanceDec -> Performance
+
+RSA: AsymmetricCipher
+    [ name = "RSA" ]
+    [ description = "RSA Algm"]
+    [ security = Strong ]
+    [ performance = Slow ]
+    [ keySizePub = 4 ]
+    [ keySizeSec = keySizePub ]
