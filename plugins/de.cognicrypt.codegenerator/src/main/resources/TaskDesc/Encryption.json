@@ -133,6 +133,7 @@
   ],
   "nextID": "-1"
 },
+
 {
   "id": "1",
   "helpID": "Encryption_Page1",
@@ -147,7 +148,7 @@
             "value": "true"
         }],
         "claferDependencies":[{
-			"algorithm": "lbc",
+			"algorithm": "LP",
             "value": "LatticeBasedCipher",
             "operator": "->"
         },

@@ -123,16 +123,8 @@
 
 				public byte[] encrypt(SecretKey sessionKey, PublicKey publicKey) throws
 				GeneralSecurityException {
-				
-				<xsl:choose>
-					<xsl:when test="//task/code/post-quantum='true'">
-						Cipher c = Cipher.getInstance("LindnerPeikert")
-					</xsl:when>
-					<xsl:otherwise>
-						Cipher c = Cipher.getInstance("<xsl:value-of select="//task/algorithm[@type='AsymmetricCipher']/name" />/<xsl:value-of select="//task/algorithm[@type='AsymmetricCipher']/mode" />/<xsl:choose><xsl:when test="//task/algorithm[@type='AsymmetricCipher']/padding='OAEPWithSHA256AndMGF1Padding'">OAEPWithSHA-256AndMGF1Padding</xsl:when><xsl:otherwise>OAEPWithSHA-512AndMGF1Padding</xsl:otherwise></xsl:choose>");
-					</xsl:otherwise>
-				</xsl:choose>
-				
+
+				Cipher c = Cipher.getInstance("<xsl:value-of select="//task/algorithm[@type='AsymmetricCipher']/name" />/<xsl:value-of select="//task/algorithm[@type='AsymmetricCipher']/mode" />/<xsl:choose><xsl:when test="//task/algorithm[@type='AsymmetricCipher']/padding='OAEPWithSHA256AndMGF1Padding'">OAEPWithSHA-256AndMGF1Padding</xsl:when><xsl:otherwise>OAEPWithSHA-512AndMGF1Padding</xsl:otherwise></xsl:choose>");
 				c.init(Cipher.WRAP_MODE, publicKey);
 				byte[] sessionKeyBytes = c.wrap(sessionKey);
 				return sessionKeyBytes;
@@ -152,7 +144,16 @@
 			KeyManagment km = new KeyManagment();
 			<xsl:choose>
 				<xsl:when test="//task/code/hybrid='true'">
-					SecretKey sessionKey = km.generateSessionKey(<xsl:value-of	select="//task/algorithm[@type='SymmetricBlockCipher']/keySize" />);
+				
+					<xsl:choose>
+						<xsl:when test="//task/code/post-quantum='true'">
+							SecretKey sessionKey = km.generateSessionKey(<xsl:value-of	select="//task/algorithm[@type='LatticeBasedCipher']/keySizeSec" />);
+						</xsl:when>
+						<xsl:otherwise>
+							SecretKey sessionKey = km.generateSessionKey(<xsl:value-of	select="//task/algorithm[@type='SymmetricBlockCipher']/keySize" />);
+						</xsl:otherwise>
+					</xsl:choose>
+					
 					SymmetricEnc symEnc = new SymmetricEnc();
 					<xsl:choose>
 						<xsl:when test="//task/code/dataType='File'">
@@ -225,38 +226,26 @@
 				</xsl:if>
 
 				<xsl:if test="//task/code/hybrid='true'">
+					public SecretKey generateSessionKey(int keySize) throws
+					NoSuchAlgorithmException {
 					<xsl:choose>
 						<xsl:when test="//task/code/post-quantum='true'">
-							public SecretKey generateSessionKey(int keySize) throws
-							NoSuchAlgorithmException {
-							KeyGenerator kg = KeyGenerator.getInstance("LindnerPeikert");
-							kg.init(keySize);
-							return kg.generateKey();
-							}
-		
-							public KeyPair generateKeyPair(int keySize) throws
-							NoSuchAlgorithmException{
-							KeyPairGenerator kpg = KeyPairGenerator.getInstance("LindnerPeikert");
-							kpg.initialize(keySize);
-							return kpg.generateKeyPair();
-							}
+							KeyGenerator kg = KeyGenerator.getInstance("<xsl:value-of select="//task/algorithm[@type='LatticeBasedCipher']/name" />");
 						</xsl:when>
 						<xsl:otherwise>
-							public SecretKey generateSessionKey(int keySize) throws
-							NoSuchAlgorithmException {
 							KeyGenerator kg = KeyGenerator.getInstance("<xsl:value-of select="//task/algorithm[@type='SymmetricBlockCipher']/name" />");
-							kg.init(keySize);
-							return kg.generateKey();
-							}
-		
-							public KeyPair generateKeyPair(int keySize) throws
-							NoSuchAlgorithmException{
-							KeyPairGenerator kpg = KeyPairGenerator.getInstance("<xsl:value-of select="//task/algorithm[@type='AsymmetricCipher']/name" />");
-							kpg.initialize(keySize);
-							return kpg.generateKeyPair();
-							}
 						</xsl:otherwise>
 					</xsl:choose>
+					kg.init(keySize);
+					return kg.generateKey();
+					}
+
+					public KeyPair generateKeyPair(int keySize) throws
+					NoSuchAlgorithmException{
+					KeyPairGenerator kpg = KeyPairGenerator.getInstance("<xsl:value-of select="//task/algorithm[@type='AsymmetricCipher']/name" />");
+					kpg.initialize(keySize);
+					return kpg.generateKeyPair();
+					}
 				</xsl:if>
 				}
 			</xsl:result-document>

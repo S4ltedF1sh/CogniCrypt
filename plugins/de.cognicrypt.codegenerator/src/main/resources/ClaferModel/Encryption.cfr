@@ -2,7 +2,7 @@ abstract Enum
 
 //enum Security
 abstract Security : Enum -> integer
-NoSecurity: Security = 0 // added from LP
+NoSecurity: Security = 0
 Broken: Security = 1
 Weak: Security = 2
 Medium: Security = 3
@@ -20,6 +20,16 @@ abstract Padding: Enum
 NoPadding : Padding
 PKCS5Padding : Padding
 
+abstract XQuantum : Enum
+pre  : XQuantum 
+post : XQuantum
+
+abstract AttackModel : Enum
+ CPA : AttackModel
+ CCA1 : AttackModel 
+ CCA2 : AttackModel
+ SC : AttackModel
+
 //enum AsymmetricPadding
 abstract AsymmetricPadding: Enum -> string
 OAEPWithSHA256AndMGF1Padding : AsymmetricPadding
@@ -33,7 +43,7 @@ CTR : Mode
 CTS : Mode
 CFB : Mode
 OFB : Mode
-GCM : Mode // added from LP
+//GCM : Mode
 
 //enum Provider
 abstract Provider: Enum
@@ -48,7 +58,9 @@ abstract Algorithm
 	provider -> Provider
 
 abstract Cipher : Algorithm
-
+	secProperty -> AttackModel
+	quantum -> XQuantum
+	
 abstract SymmetricCipher : Cipher
  	keySize -> integer
 	[classPerformance = Fast]
@@ -123,49 +135,16 @@ RSA: AsymmetricCipher
     [keySizePub = 2048 || keySizePub = 4096]
     [keySizePub > 2048 => performance = Slow && algorithmSecurity = Strong && padding = OAEPWithSHA256AndMGF1Padding]	    
     [keySizeSec = keySizePub ]
-	
     
-Encryption : Task
-	[description = "HybridEncryption"]
-	symmetricCipher -> SymmetricBlockCipher
-	asymmetricCipher -> AsymmetricCipher
-	security -> integer
-	
-
-//added from LindnerPeikert//////////////////////////////////////////////
-abstract XQuantum : Enum
-pre  : XQuantum 
-post : XQuantum
-
-abstract AttackModel : Enum
- CPA : AttackModel
- CCA1 : AttackModel 
- CCA2 : AttackModel
- SC : AttackModel
- 
- abstract Algorithm2
-    name -> string
-    description -> string
-    security -> Security
-    performance -> Performance
-
-abstract Cipher2 : Algorithm2
-	secProperty -> AttackModel
-	quantum -> XQuantum
- 
- abstract AsymmetricCipher : Cipher2
-	keySizePub -> integer
-	keySizeSec -> integer
-	performanceEnc -> Performance
-	performanceDec -> Performance
- 
- abstract LatticeBasedCipher: AsymmetricCipher
+abstract LatticeBasedCipher: AsymmetricCipher
 	messageSize -> integer
 	cipherSize -> integer
 	n -> integer
 	q -> integer 
- 
- LP: LatticeBasedCipher
+	performanceEnc -> Performance
+	performanceDec -> Performance
+    
+LP: LatticeBasedCipher
     [ name = "LP" ]
     [ description = "Linder-Peikert Scheme"]
     [ messageSize = 1 || messageSize = 2 || messageSize = 3 ]
@@ -180,42 +159,13 @@ abstract Cipher2 : Algorithm2
     [ n = 4 => q = 40 && s = 8 && security = Strong && cipherSize = 42 * messageSize ]
     [ keySizePub = n * n * 25]
     [ keySizeSec = n * 26 ]
+    // Missing performance from AsymmetricCipher, I'm not sure if it's needed 
     [ performanceEnc = Slow ]
-[ performanceDec = Fast ]
-
-// I'm not sure if this is needed
-AES128 : SymmetricBlockCipher
-	[name = "AES"]
-	[description = "Advanced Encryption Standard (AES) cipher"]s
-	[keySize = 128]
-	[performance = VeryFast]
-	[security = Medium]
-
-AES192 : SymmetricBlockCipher
-	[name = "AES"]
-	[description = "Advanced Encryption Standard (AES) cipher"]s
-	[keySize = 192]
-	[performance = Fast]
-	[security = Strong]
+	[ performanceDec = Fast ]
 	
-
-AES256 : SymmetricBlockCipher
-	[name = "AES"]
-	[description = "Advanced Encryption Standard (AES) cipher"]s
-	[keySize = 256]
-	[performance = Fast]
-	[security = Strong]
-	
-abstract AsymmetricCipher : Cipher
-	keySizePub -> integer
-	keySizeSec -> integer
-	performanceEnc -> Performance
-	performanceDec -> Performance
-
-RSA: AsymmetricCipher
-    [ name = "RSA" ]
-    [ description = "RSA Algm"]
-    [ security = Strong ]
-    [ performance = Slow ]
-    [ keySizePub = 4 ]
-    [ keySizeSec = keySizePub ]
+    
+Encryption : Task
+	[description = "HybridEncryption"]
+	symmetricCipher -> SymmetricBlockCipher
+	asymmetricCipher -> AsymmetricCipher
+	security -> integer
